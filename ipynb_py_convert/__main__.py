@@ -4,7 +4,6 @@ from os import path
 
 header_comment = '# %%\n'
 
-
 def nb2py(notebook):
     result = []
     cells = notebook['cells']
@@ -32,6 +31,11 @@ def py2nb(py_str):
 
     for chunk in chunks:
         cell_type = 'code'
+        new_json = {'metadata':{}}
+        if chunk.startswith('# !!'):
+            new_json = json.loads("\n".join([x.strip() for x in chunk.splitlines() if '# !!' in x]).replace('# !!',''))
+            chunk = "\n".join([x for x in chunk.splitlines() if '# !!' not in x])
+            print(new_json['metadata'])
         if chunk.startswith("'''"):
             chunk = chunk.strip("'\n")
             cell_type = 'markdown'
@@ -41,7 +45,7 @@ def py2nb(py_str):
 
         cell = {
             'cell_type': cell_type,
-            'metadata': {},
+            'metadata': new_json['metadata'],
             'source': chunk.splitlines(True),
         }
 
@@ -54,20 +58,46 @@ def py2nb(py_str):
         'cells': cells,
         'metadata': {
             'anaconda-cloud': {},
+            'accelerator': 'GPU',
+            'colab': {
+              'collapsed_sections': [
+                'CreditsChTop',
+                'TutorialTop',
+                'CheckGPU',
+                'InstallDeps',
+                'DefMidasFns',
+                'DefFns',
+                'DefSecModel',
+                'DefSuperRes',
+                'AnimSetTop',
+                'ExtraSetTop'
+              ],
+              'machine_shape': 'hm',
+              'name': 'Disco Diffusion v5.1 [w/ Turbo]',
+              'private_outputs': True,
+              'provenance': [],
+              'include_colab_link': True
+            },
             'kernelspec': {
-                'display_name': 'Python 3',
-                'language': 'python',
-                'name': 'python3'},
+              'display_name': 'Python 3',
+              'language': 'python',
+              'name': 'python3'
+            },
             'language_info': {
-                'codemirror_mode': {'name': 'ipython', 'version': 3},
-                'file_extension': '.py',
-                'mimetype': 'text/x-python',
-                'name': 'python',
-                'nbconvert_exporter': 'python',
-                'pygments_lexer': 'ipython3',
-                'version': '3.6.1'}},
-        'nbformat': 4,
-        'nbformat_minor': 4
+              'codemirror_mode': {
+                'name': 'ipython',
+                'version': 3
+              },
+              'file_extension': '.py',
+              'mimetype': 'text/x-python',
+              'name': 'python',
+              'nbconvert_exporter': 'python',
+              'pygments_lexer': 'ipython3',
+              'version': '3.6.1'
+            }
+          },
+          'nbformat': 4,
+          'nbformat_minor': 4
     }
 
     return notebook
