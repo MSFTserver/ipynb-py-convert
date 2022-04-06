@@ -67,46 +67,20 @@ def py2nb(py_str):
         'cells': cells,
         'metadata': {
             'anaconda-cloud': {},
-            'accelerator': 'GPU',
-            'colab': {
-              'collapsed_sections': [
-                'CreditsChTop',
-                'TutorialTop',
-                'CheckGPU',
-                'InstallDeps',
-                'DefMidasFns',
-                'DefFns',
-                'DefSecModel',
-                'DefSuperRes',
-                'AnimSetTop',
-                'ExtraSetTop'
-              ],
-              'machine_shape': 'hm',
-              'name': 'Disco Diffusion v5.1 [w/ Turbo]',
-              'private_outputs': True,
-              'provenance': [],
-              'include_colab_link': True
-            },
             'kernelspec': {
-              'display_name': 'Python 3',
-              'language': 'python',
-              'name': 'python3'
-            },
+                'display_name': 'Python 3',
+                'language': 'python',
+                'name': 'python3'},
             'language_info': {
-              'codemirror_mode': {
-                'name': 'ipython',
-                'version': 3
-              },
-              'file_extension': '.py',
-              'mimetype': 'text/x-python',
-              'name': 'python',
-              'nbconvert_exporter': 'python',
-              'pygments_lexer': 'ipython3',
-              'version': '3.6.1'
-            }
-          },
-          'nbformat': 4,
-          'nbformat_minor': 4
+                'codemirror_mode': {'name': 'ipython', 'version': 3},
+                'file_extension': '.py',
+                'mimetype': 'text/x-python',
+                'name': 'python',
+                'nbconvert_exporter': 'python',
+                'pygments_lexer': 'ipython3',
+                'version': '3.6.1'}},
+        'nbformat': 4,
+        'nbformat_minor': 4
     }
 
     return notebook
