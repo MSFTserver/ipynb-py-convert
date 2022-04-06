@@ -7,7 +7,15 @@ header_comment = '# %%\n'
 def nb2py(notebook):
     result = []
     cells = notebook['cells']
-
+    main_metadata = json.dumps(notebook['metadata'],indent=2).split("\n")
+    reformat_main_metadata = '# !! {"main_metadata":'
+    for key in main_metadata:
+        if key == '{':
+            reformat_main_metadata+=f"{key}\n"
+        elif key == '}':
+            reformat_main_metadata+="# !! "+key+"}\n"
+        else:
+            reformat_main_metadata+=f'# !! {key}\n'
     for cell in cells:
         cell_type = cell['cell_type']
         metadata = cell['metadata']
@@ -28,7 +36,7 @@ def nb2py(notebook):
         if cell_type == 'code':
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(cell['source'])))
 
-    return '\n\n'.join(result)
+    return '\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
 
 
 def py2nb(py_str):
@@ -44,6 +52,7 @@ def py2nb(py_str):
         new_json = {'metadata':{}}
         if chunk.startswith('# !!'):
             new_json = json.loads("\n".join([x.strip() for x in chunk.splitlines() if '# !!' in x]).replace('# !!',''))
+            print(new_json.keys())
             chunk = "\n".join([x for x in chunk.splitlines() if '# !!' not in x])
         if chunk.startswith("'''"):
             chunk = chunk.strip("'\n")
@@ -51,36 +60,25 @@ def py2nb(py_str):
         elif chunk.startswith('"""'):
             chunk = chunk.strip('"\n')
             cell_type = 'markdown'
+        if 'main_metadata' in new_json.keys():
+            main_metadata = new_json['main_metadata']
+        else:
+            cell = {
+                'cell_type': cell_type,
+                'metadata': {} if 'main_metadata' in new_json else new_json['metadata'],
+                'source': chunk.splitlines(True),
+            }
 
-        cell = {
-            'cell_type': cell_type,
-            'metadata': new_json['metadata'],
-            'source': chunk.splitlines(True),
-        }
+            if cell_type == 'code':
+                cell.update({'outputs': [], 'execution_count': None})
 
-        if cell_type == 'code':
-            cell.update({'outputs': [], 'execution_count': None})
-
-        cells.append(cell)
+            cells.append(cell)
 
     notebook = {
         'cells': cells,
-        'metadata': {
-            'anaconda-cloud': {},
-            'kernelspec': {
-                'display_name': 'Python 3',
-                'language': 'python',
-                'name': 'python3'},
-            'language_info': {
-                'codemirror_mode': {'name': 'ipython', 'version': 3},
-                'file_extension': '.py',
-                'mimetype': 'text/x-python',
-                'name': 'python',
-                'nbconvert_exporter': 'python',
-                'pygments_lexer': 'ipython3',
-                'version': '3.6.1'}},
-        'nbformat': 4,
-        'nbformat_minor': 4
+        'metadata': main_metadata,
+          'nbformat': 4,
+          'nbformat_minor': 4
     }
 
     return notebook
