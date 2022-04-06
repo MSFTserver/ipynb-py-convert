@@ -47,6 +47,8 @@ or
 
 Markdown cells are converted to python multiline strings `'''`. Code cells are left as is. `# %%` is used by vscode as the cell marker on which 'Run Cell' action is available.
 
+Metadata is converted from notebooks into .py and vise versa using `# !!` to denote the meta data lines in the .py files
+
 
 **Jupyter ipynb notebook**
 
