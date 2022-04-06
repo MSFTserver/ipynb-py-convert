@@ -10,13 +10,23 @@ def nb2py(notebook):
 
     for cell in cells:
         cell_type = cell['cell_type']
-
+        metadata = cell['metadata']
+        format_metadata = json.dumps(metadata,indent=2).split("\n")
+        reformat_metadata = '# !! {"metadata":'
+        for key in format_metadata:
+            if key == '{':
+                reformat_metadata+=f"{key}\n"
+            elif key == '}':
+                reformat_metadata+="# !! "+key+"}\n"
+            else:
+                reformat_metadata+=f'# !! {key}\n'
+    
         if cell_type == 'markdown':
             result.append('%s"""\n%s\n"""'%
-                          (header_comment, ''.join(cell['source'])))
+                          (header_comment+reformat_metadata, ''.join(cell['source'])))
 
         if cell_type == 'code':
-            result.append("%s%s" % (header_comment, ''.join(cell['source'])))
+            result.append("%s%s" % (header_comment+reformat_metadata, ''.join(cell['source'])))
 
     return '\n\n'.join(result)
 
@@ -35,7 +45,6 @@ def py2nb(py_str):
         if chunk.startswith('# !!'):
             new_json = json.loads("\n".join([x.strip() for x in chunk.splitlines() if '# !!' in x]).replace('# !!',''))
             chunk = "\n".join([x for x in chunk.splitlines() if '# !!' not in x])
-            print(new_json['metadata'])
         if chunk.startswith("'''"):
             chunk = chunk.strip("'\n")
             cell_type = 'markdown'
